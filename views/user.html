@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <style>
+        ul {
+            padding: 0px;
+
+        }
+
+        li {
+            border: solid black 1px;
+        }
+
+        ul li {
+            display: inline-block;
+            border: solid black 1px;
+
+        }
+
+        #list {
+            border: black solid;
+            height: 300px;
+            overflow: auto;
+        }
+
+        #list li {
+            border: 1px black solid;
+            display: block;
+            margin: 0px;
+        }
+
+        i {
+            background-color: aqua;
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+
+    <script>
+        window.onload = () => {
+
+           
+
+        };
+
+
+    </script>
+</head>
+
+<body>
+
+    <ul id='list'></ul>
+
+    <label for="contents">과목명</label>
+    <input type="text" name="name" id="name" required>
+    <input type="button" id="nameBtn" value="검색">
+    </br>
+    <label for="grade">학년별</label>
+    <input type="text" name="grade" id="grade" required>
+    <input type="button" id="gradeBtn" value="검색">
+    </br>
+    <label for="code">코드명</label>
+    <input type="text" name="code" id="code" required>
+    <input type="button" id="codeBtn" value="검색">
+    </br>
+    <input type="button" id="all" value="전체보기">
+
+</body>
+
+</html>
