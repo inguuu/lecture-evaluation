@@ -197,7 +197,49 @@
             var name = "";
 
 
+            document.getElementById('closeEvaluation').onclick = () => {
+                document.getElementById('enum').value = "";
+                document.getElementById('etext').value = ""
+                document.getElementById('evaluation').style.display = "none";
 
+            }
+            document.getElementById('backBtn').onclick = () => {
+                location.reload();
+            }
+            document.getElementById('backBtn1').onclick = () => {
+                location.reload();
+            }
+            document.getElementById('backBtn2').onclick = () => {
+                location.reload();
+            }
+
+            document.getElementById('submit').onclick = () => {
+                $.ajax({
+                    method: "POST", // 요청 방식
+                    url: "/evaluation/write",
+                    data: {
+                        code: valcode,
+                        text: document.getElementById('etext').value,
+                        num: document.getElementById('enum').value
+                    }, // 요청 URL
+
+
+                    error: function (data) {
+                        console.log("failed");
+                    },
+                    complete: function () {
+
+                        console.log('compelted-');
+
+                    }
+
+                });
+                alert("강의평 작성 완료");
+                document.getElementById('enum').value = "";
+                document.getElementById('etext').value = "";
+                document.getElementById('evaluation').style.display = "none";
+                location.reload();
+            }
 
             document.getElementById('all').onclick = () => {
 
