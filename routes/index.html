@@ -3,6 +3,53 @@
 
 <head>
     <style>
+        .me {
+            color: #ffffff;
+            background: #8db9f1;
+            border-radius: 2em;
+            padding-top: 0.2em;
+            padding-bottom: 0.2em;
+            padding-left: 0.4em;
+            padding-left: 0.2em;
+            font-family: Georgia, Times, serif;
+            font-weight: 900;
+            font-size: 25px;
+
+        }
+
+        .hh1 {
+            margin-top: 10px;
+            font-family: Georgia, Times, serif;
+            font-weight: 900;
+            font-size: 30px;
+            padding-right: 15px;
+            float: center;
+        }
+
+        ul {
+            padding: 0px;
+            overflow: auto;
+            clear: both;
+        }
+
+        li {
+            border: solid black 1px;
+        }
+
+        h2 {
+            clear: both;
+        }
+
+        ul li {
+            display: inline-block;
+            border: solid black 1px;
+            background-color: rgb(203, 219, 231);
+        }
+
+        ul li:hover {
+            background-color: #59a5ec;
+        }
+
         #list {
 
             border: rgb(161, 231, 188) 3px solid;
@@ -195,8 +242,102 @@
             let varcode = "";
             var loginstate = 0;//0이면 아님
             var name = "";
+            function loginState() {
+                if (loginstate == 1) {
+                    document.getElementById('loginBtn').style.display = "none";
+                    document.getElementById('signBtn').style.display = "none";
+                    document.getElementById('logintag').style.display = "block";
+                    document.getElementById('logoutBtn').style.display = "block";
+                    document.getElementById('logintag').innerHTML = name + "님 반갑습니다.";
+                }
+            }
+            document.getElementById('logoutBtn').onclick = () => {
+                location.reload();
+
+            }
+            document.getElementById('loginBtn').onclick = () => {
+                document.getElementById('main').style.display = "none";
+                document.getElementById('evaluation').style.display = "none";
+                document.getElementById('eview').style.display = "none";
+                document.getElementById('sign').style.display = "none";
+                document.getElementById('login').style.display = "block";
+
+            }
+            document.getElementById('signOk').onclick = () => {
+                $.ajax({
+                    method: "POST", // 요청 방식
+                    url: "/sign",
+                    data: {
+                        id: document.getElementById('sid').value,
+                        pw: document.getElementById('spw').value,
+                        name: document.getElementById('sname').value
+                    }, // 요청 URL
 
 
+                    error: function (data) {
+                        console.log("failed");
+                    },
+                    complete: function () {
+
+                        console.log('compelted-');
+
+                    }
+
+                });
+                alert("회원가입 완료");
+                location.reload();
+            }
+            document.getElementById('loginOk').onclick = () => {
+                $.ajax({
+                    method: "POST", // 요청 방식
+                    url: "/login",
+                    data: {
+                        id: document.getElementById('lid').value,
+                        pw: document.getElementById('lpw').value
+                    }, // 요청 URL
+                    success: function (data) {
+                        console.log(data);
+                        if (data.msg == "실패") {
+                            alert("아이디, 패스워드를 다시한번 확인해주세요");
+                            document.getElementById('lid').value = "";
+                            document.getElementById('lpw').value = "";
+                        }
+                        else {
+                            alert("로그인 성공");
+                            document.getElementById('main').style.display = "block";
+                            document.getElementById('evaluation').style.display = "none";
+                            document.getElementById('eview').style.display = "none";
+                            document.getElementById('sign').style.display = "none";
+                            document.getElementById('login').style.display = "none";
+                            loginstate = 1;
+                            name = data.name
+                            loginState();
+                        }
+                    },
+
+                    error: function (data) {
+                        console.log("failed");
+                    },
+                    complete: function () {
+
+                        console.log('compelted-');
+
+                    }
+
+                });
+
+
+            }
+
+            document.getElementById('signBtn').onclick = () => {
+
+                document.getElementById('main').style.display = "none";
+                document.getElementById('evaluation').style.display = "none";
+                document.getElementById('eview').style.display = "none";
+                document.getElementById('sign').style.display = "block";
+                document.getElementById('login').style.display = "none";
+
+            }
             document.getElementById('closeEvaluation').onclick = () => {
                 document.getElementById('enum').value = "";
                 document.getElementById('etext').value = ""
@@ -307,7 +448,81 @@
                 document.getElementById('name').value = "";
                 document.getElementById('code').value = "";
             }
+            document.getElementById('nameBtn').onclick = () => {
 
+                if (document.getElementById('name').value == "") {
+                    alert("내용을 입력해 주세요");
+                    console.log(document.getElementById('name').value);
+                } else {
+                    console.log(typeof (document.getElementById('name').value));
+                    console.log("여기?");
+                    $.ajax({
+                        method: "GET", // 요청 방식
+                        url: "/ajax/" + "1/" + document.getElementById('name').value, // 요청 URL
+
+                        success: function (data) { // 성공 시 호출 콜백
+                            $('#list').empty();
+                            for (var i = 0; i < data.length; i++) {
+                                if (data[i].avg == null) { data[i].avg = 0 }
+                                var tag = `<li>${data[i].code}, ${data[i].name}, ${data[i].grade}학년,${data[i].avg.toFixed(2)}점, 
+                            ${data[i].pro}, ${data[i].time} </li><i id="i${i}">강의평가</i>`;
+                                var $li = (`${tag}`);
+                                $('#list').append($li);//jQuery 문법
+
+                            }
+                            $("#list").children().click(function () {
+                                choice = $("#list").children().index(this);
+                                valcode = $("#list").children().get(choice).innerText.toString().substring(0, 6);
+
+                                if ($("#list").children().get(choice).tagName == "LI") {// 강의평 상세보기
+                                    $.ajax({
+                                        method: "GET", // 요청 방식
+                                        url: "/evaluation/read/" + valcode,
+                                        success: function (data) { // 성공 시 호출 콜백
+                                            document.getElementById('main').style.display = "none";
+                                            document.getElementById('eview').style.display = "block";
+                                            $("#elist").empty();
+                                            for (let i = 0; i < data.length; i++) {
+                                                var tag = `<li><i>점수: ${data[i].num}  </i>강의평: ${data[i].text}</li>`;
+                                                var $li = (`${tag}`);
+                                                $("#elist").append($li)
+                                            }
+
+                                        },
+
+                                        error: function (data) {
+                                            console.log("failed");
+                                        },
+                                        complete: function () {
+                                            console.log('compelted');
+                                        }
+
+                                    });
+
+                                } else if ($("#list").children().get(choice).tagName == "I") {//강의평 쓰기
+                                    document.getElementById('enum').value = "";
+                                    document.getElementById('etext').value = "";
+                                    valcode = $("#list").children().get(choice - 1).innerText.toString().substring(0, 6);
+                                    document.getElementById('evaluation').style.display = "block";
+                                    document.getElementById('subnum').innerHTML = "강의평가 작성";
+                                }
+
+                            });
+
+                        },
+                        error: function (data) {
+                            console.log("data.statusText");
+                        },
+                        complete: function () {
+                            console.log(document.getElementById('name').value);
+                            console.log('compelted');
+                        }
+                    });
+                }
+                document.getElementById('grade').value = "";
+                document.getElementById('name').value = "";
+                document.getElementById('code').value = "";
+            }
             document.getElementById('codeBtn').onclick = () => {
 
                 if (document.getElementById('code').value == "") {
